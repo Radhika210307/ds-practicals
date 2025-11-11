@@ -7,8 +7,6 @@ WAP  to implement doubly linked list ad an ADT that supports the following opera
 3 remove an element from the beginning .
 4  remove an element from the end.
 
-
-
 #include <iostream>
 using namespace std;
 
