@@ -1,6 +1,13 @@
 # ds-practicals
 
 PRACTICAL 01
+WAP  to implement doubly linked list ad an ADT that supports the following operations: 
+1 insert an element x at the beginning  .
+2 insert an element x at the end .
+3 remove an element from the beginning .
+4  remove an element from the end.
+
+
 
 #include <iostream>
 using namespace std;
@@ -166,3 +173,153 @@ int main() {
 
     return 0;
 }
+
+
+PRACTICAL 02
+WAP  to implement doubly linked list ad an ADT that supports the following operations: 
+1 insert an element x at the beginning  .
+2 insert an element x at the end .
+3 remove an element from the beginning .
+4  remove an element from the end.
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure for a node in the doubly linked list
+typedef struct Node {
+    int data;
+    struct Node* prev;
+    struct Node* next;
+} Node;
+
+// Head and tail pointers (global for simplicity)
+Node* head = NULL;
+Node* tail = NULL;
+
+// Function to create a new node
+Node* createNode(int x) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = x;
+    newNode->prev = NULL;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// 1. Insert an element at the beginning
+void insertAtBeginning(int x) {
+    Node* newNode = createNode(x);
+    if (head == NULL) {
+        head = tail = newNode;
+    } else {
+        newNode->next = head;
+        head->prev = newNode;
+        head = newNode;
+    }
+    printf("%d inserted at beginning.\n", x);
+}
+
+// 2. Insert an element at the end
+void insertAtEnd(int x) {
+    Node* newNode = createNode(x);
+    if (tail == NULL) {
+        head = tail = newNode;
+    } else {
+        tail->next = newNode;
+        newNode->prev = tail;
+        tail = newNode;
+    }
+    printf("%d inserted at end.\n", x);
+}
+
+// 3. Remove an element from the beginning
+void removeFromBeginning() {
+    if (head == NULL) {
+        printf("List is empty. Cannot remove.\n");
+        return;
+    }
+    Node* temp = head;
+    printf("Removed %d from beginning.\n", temp->data);
+    head = head->next;
+    if (head != NULL)
+        head->prev = NULL;
+    else
+        tail = NULL;
+    free(temp);
+}
+
+// 4. Remove an element from the end
+void removeFromEnd() {
+    if (tail == NULL) {
+        printf("List is empty. Cannot remove.\n");
+        return;
+    }
+    Node* temp = tail;
+    printf("Removed %d from end.\n", temp->data);
+    tail = tail->prev;
+    if (tail != NULL)
+        tail->next = NULL;
+    else
+        head = NULL;
+    free(temp);
+}
+
+// Function to display the list
+void display() {
+    if (head == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+    Node* temp = head;
+    printf("List: ");
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+// Main function to test the ADT
+int main() {
+    int choice, x;
+    while (1) {
+        printf("\n--- Doubly Linked List Operations ---\n");
+        printf("1. Insert at Beginning\n");
+        printf("2. Insert at End\n");
+        printf("3. Remove from Beginning\n");
+        printf("4. Remove from End\n");
+        printf("5. Display\n");
+        printf("6. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+        case 1:
+            printf("Enter element: ");
+            scanf("%d", &x);
+            insertAtBeginning(x);
+            break;
+        case 2:
+            printf("Enter element: ");
+            scanf("%d", &x);
+            insertAtEnd(x);
+            break;
+        case 3:
+            removeFromBeginning();
+            break;
+        case 4:
+            removeFromEnd();
+            break;
+        case 5:
+            display();
+            break;
+        case 6:
+            printf("Exiting...\n");
+            exit(0);
+        default:
+            printf("Invalid choice.\n");
+        }
+    }
+    return 0;
+}
+
