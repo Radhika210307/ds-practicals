@@ -7,6 +7,9 @@ WAP  to implement doubly linked list ad an ADT that supports the following opera
 3 remove an element from the beginning .
 4  remove an element from the end.
 
+
+
+'''bash
 #include <iostream>
 using namespace std;
 
@@ -148,6 +151,7 @@ public:
         cout << "NULL" << endl;
     }
 };
+'''
 
 // ---------------------------
 // Example Usage
