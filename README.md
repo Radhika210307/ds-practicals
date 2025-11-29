@@ -8,20 +8,13 @@ WAP  to implement doubly linked list ad an ADT that supports the following opera
 4  remove an element from the end.
 
 
-
-'''bash
 #include <iostream>
 using namespace std;
 
-class Node {
-public:
+struct Node {
     int data;
     Node* next;
-
-    Node(int val) {
-        data = val;
-        next = nullptr;
-    }
+    Node(int d) : data(d), next(NULL) {}
 };
 
 class SinglyLinkedList {
@@ -29,152 +22,180 @@ private:
     Node* head;
 
 public:
-    SinglyLinkedList() {
-        head = nullptr;
-    }
+    SinglyLinkedList() : head(NULL) {}
 
-    // 1. Insert element at beginning
-    void insertAtBeginning(int x) {
-        Node* newNode = new Node(x);
-        newNode->next = head;
-        head = newNode;
-    }
-
-    // 2. Insert element at ith position (0-based index)
-    void insertAtPosition(int x, int pos) {
-        if (pos < 0) {
-            cout << "Invalid position!" << endl;
-            return;
+    ~SinglyLinkedList() {
+        // free all nodes
+        while (head != NULL) {
+            deleteFromBeginning();
         }
+    }
 
-        Node* newNode = new Node(x);
+    // Insert at beginning
+    void insertAtBeginning(int x) {
+        Node* temp = new Node(x);
+        temp->next = head;
+        head = temp;
+    }
+
+    // Insert at i-th position (0-based)
+    void insertAtPosition(int x, int pos) {
+        Node* temp = new Node(x);
 
         if (pos == 0) {
-            newNode->next = head;
-            head = newNode;
+            temp->next = head;
+            head = temp;
             return;
         }
 
-        Node* current = head;
-        for (int i = 0; i < pos - 1 && current != nullptr; i++) {
-            current = current->next;
+        Node* curr = head;
+        for (int i = 0; i < pos - 1 && curr != NULL; i++) {
+            curr = curr->next;
         }
 
-        if (current == nullptr) {
-            cout << "Position out of range!" << endl;
-            delete newNode;
+        if (curr == NULL) {
+            cout << "Position out of range\n";
+            delete temp;
             return;
         }
 
-        newNode->next = current->next;
-        current->next = newNode;
+        temp->next = curr->next;
+        curr->next = temp;
     }
 
-    // 3. Remove element from beginning
-    void removeFromBeginning() {
-        if (head == nullptr) {
-            cout << "List is empty!" << endl;
+    // Delete from beginning
+    void deleteFromBeginning() {
+        if (head == NULL) {
+            cout << "List is empty\n";
             return;
         }
-
         Node* temp = head;
         head = head->next;
-        cout << "Removed element: " << temp->data << endl;
         delete temp;
     }
 
-    // 4. Remove element from ith position
-    void removeFromPosition(int pos) {
-        if (head == nullptr) {
-            cout << "List is empty!" << endl;
-            return;
-        }
-
-        if (pos < 0) {
-            cout << "Invalid position!" << endl;
+    // Delete from i-th position (0-based)
+    void deleteFromPosition(int pos) {
+        if (head == NULL) {
+            cout << "List is empty\n";
             return;
         }
 
         if (pos == 0) {
             Node* temp = head;
             head = head->next;
-            cout << "Removed element: " << temp->data << endl;
             delete temp;
             return;
         }
 
-        Node* current = head;
-        for (int i = 0; i < pos - 1 && current->next != nullptr; i++) {
-            current = current->next;
+        Node* curr = head;
+        for (int i = 0; i < pos - 1 && curr != NULL; i++) {
+            curr = curr->next;
         }
 
-        if (current->next == nullptr) {
-            cout << "Position out of range!" << endl;
+        if (curr == NULL || curr->next == NULL) {
+            cout << "Position out of range\n";
             return;
         }
 
-        Node* temp = current->next;
-        current->next = temp->next;
-        cout << "Removed element: " << temp->data << endl;
+        Node* temp = curr->next;
+        curr->next = temp->next;
         delete temp;
     }
 
-    // 5. Search for an element and return its pointer
+    // Search for element x; return pointer to node or NULL
     Node* search(int x) {
-        Node* current = head;
-        int position = 0;
-        while (current != nullptr) {
-            if (current->data == x) {
-                cout << "Element " << x << " found at position " << position
-                     << " (address: " << current << ")" << endl;
-                return current;
-            }
-            current = current->next;
-            position++;
+        Node* curr = head;
+        while (curr != NULL) {
+            if (curr->data == x) return curr;
+            curr = curr->next;
         }
-        cout << "Element " << x << " not found in the list." << endl;
-        return nullptr;
+        return NULL;
     }
 
-    // Display the list
+    // Utility: display list
     void display() {
-        if (head == nullptr) {
-            cout << "List is empty." << endl;
+        Node* curr = head;
+        if (curr == NULL) {
+            cout << "List: NULL\n";
             return;
         }
-        Node* current = head;
-        cout << "Linked List: ";
-        while (current != nullptr) {
-            cout << current->data << " -> ";
-            current = current->next;
+        cout << "List: ";
+        while (curr != NULL) {
+            cout << curr->data;
+            if (curr->next != NULL) cout << " -> ";
+            curr = curr->next;
         }
-        cout << "NULL" << endl;
+        cout << " -> NULL\n";
     }
 };
-'''
 
-// ---------------------------
-// Example Usage
-// ---------------------------
 int main() {
     SinglyLinkedList list;
+    int choice, x, pos;
 
-    list.insertAtBeginning(10);
-    list.insertAtBeginning(20);
-    list.insertAtPosition(30, 1);
-    list.display();
+    while (true) {
+        cout << "\nMenu:\n";
+        cout << "1. Insert at beginning\n";
+        cout << "2. Insert at position (0-based)\n";
+        cout << "3. Delete from beginning\n";
+        cout << "4. Delete from position (0-based)\n";
+        cout << "5. Search for element\n";
+        cout << "6. Display list\n";
+        cout << "7. Exit\n";
+        cout << "Enter choice: ";
+        if (!(cin >> choice)) break;
 
-    list.removeFromBeginning();
-    list.display();
+        switch (choice) {
+            case 1:
+                cout << "Enter value: ";
+                cin >> x;
+                list.insertAtBeginning(x);
+                break;
 
-    list.removeFromPosition(1);
-    list.display();
+            case 2:
+                cout << "Enter value: ";
+                cin >> x;
+                cout << "Enter position (0-based): ";
+                cin >> pos;
+                list.insertAtPosition(x, pos);
+                break;
 
-    list.search(10);
-    list.search(99);
+            case 3:
+                list.deleteFromBeginning();
+                break;
 
+            case 4:
+                cout << "Enter position (0-based): ";
+                cin >> pos;
+                list.deleteFromPosition(pos);
+                break;
+
+            case 5:
+                cout << "Enter value to search: ";
+                cin >> x;
+                if (list.search(x) != NULL)
+                    cout << x << " found in list.\n";
+                else
+                    cout << x << " not found.\n";
+                break;
+
+            case 6:
+                list.display();
+                break;
+
+            case 7:
+                cout << "Exiting.\n";
+                return 0;
+
+            default:
+                cout << "Invalid choice.\n";
+        }
+    }
     return 0;
 }
+
+
 
 
 PRACTICAL 02
