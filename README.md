@@ -7,7 +7,7 @@ WAP  to implement doubly linked list ad an ADT that supports the following opera
 3 remove an element from the beginning .
 4  remove an element from the end.
 
-
+```c++
 #include <iostream>
 using namespace std;
 
@@ -194,155 +194,188 @@ int main() {
     }
     return 0;
 }
+```
 
 
 
-
-PRACTICAL 02
-WAP  to implement doubly linked list ad an ADT that supports the following operations: 
+# PRACTICAL 02
+> WAP  to implement doubly linked list ad an ADT that supports the following operations: 
 1 insert an element x at the beginning  .
 2 insert an element x at the end .
 3 remove an element from the beginning .
 4  remove an element from the end.
 
+```c++
+#include <iostream>
+using namespace std;
 
-#include <stdio.h>
-#include <stdlib.h>
-
-// Structure for a node in the doubly linked list
-typedef struct Node {
+struct Node {
     int data;
-    struct Node* prev;
-    struct Node* next;
-} Node;
+    Node* prev;
+    Node* next;
+    Node(int d) : data(d), prev(NULL), next(NULL) {}
+};
 
-// Head and tail pointers (global for simplicity)
-Node* head = NULL;
-Node* tail = NULL;
+class DoublyLinkedList {
+private:
+    Node* head;
+    Node* tail;
 
-// Function to create a new node
-Node* createNode(int x) {
-    Node* newNode = (Node*)malloc(sizeof(Node));
-    newNode->data = x;
-    newNode->prev = NULL;
-    newNode->next = NULL;
-    return newNode;
-}
+public:
+    DoublyLinkedList() : head(NULL), tail(NULL) {}
 
-// 1. Insert an element at the beginning
-void insertAtBeginning(int x) {
-    Node* newNode = createNode(x);
-    if (head == NULL) {
-        head = tail = newNode;
-    } else {
-        newNode->next = head;
-        head->prev = newNode;
-        head = newNode;
+    ~DoublyLinkedList() {
+        // free all nodes
+        Node* cur = head;
+        while (cur != NULL) {
+            Node* nxt = cur->next;
+            delete cur;
+            cur = nxt;
+        }
     }
-    printf("%d inserted at beginning.\n", x);
-}
 
-// 2. Insert an element at the end
-void insertAtEnd(int x) {
-    Node* newNode = createNode(x);
-    if (tail == NULL) {
-        head = tail = newNode;
-    } else {
-        tail->next = newNode;
-        newNode->prev = tail;
-        tail = newNode;
-    }
-    printf("%d inserted at end.\n", x);
-}
+    // 1. Insert at beginning
+    void insertAtBeginning(int x) {
+        Node* temp = new Node(x);   // create node
+        temp->next = head;          // new->next = old head
+        temp->prev = NULL;          // new is first so prev=NULL
 
-// 3. Remove an element from the beginning
-void removeFromBeginning() {
-    if (head == NULL) {
-        printf("List is empty. Cannot remove.\n");
-        return;
+        if (head != NULL) {
+            head->prev = temp;      // old head's prev -> new
+        } else {
+            tail = temp;            // if list was empty, tail also = new
+        }
+        head = temp;                // update head
     }
-    Node* temp = head;
-    printf("Removed %d from beginning.\n", temp->data);
-    head = head->next;
-    if (head != NULL)
-        head->prev = NULL;
-    else
-        tail = NULL;
-    free(temp);
-}
 
-// 4. Remove an element from the end
-void removeFromEnd() {
-    if (tail == NULL) {
-        printf("List is empty. Cannot remove.\n");
-        return;
-    }
-    Node* temp = tail;
-    printf("Removed %d from end.\n", temp->data);
-    tail = tail->prev;
-    if (tail != NULL)
-        tail->next = NULL;
-    else
-        head = NULL;
-    free(temp);
-}
+    // 2. Insert at end
+    void insertAtEnd(int x) {
+        Node* temp = new Node(x);   // create node
+        temp->next = NULL;          // last node -> next = NULL
+        temp->prev = tail;          // prev -> old tail
 
-// Function to display the list
-void display() {
-    if (head == NULL) {
-        printf("List is empty.\n");
-        return;
+        if (tail != NULL) {
+            tail->next = temp;      // old tail's next -> new
+        } else {
+            head = temp;            // list was empty => head = new
+        }
+        tail = temp;                // update tail
     }
-    Node* temp = head;
-    printf("List: ");
-    while (temp != NULL) {
-        printf("%d ", temp->data);
-        temp = temp->next;
-    }
-    printf("\n");
-}
 
-// Main function to test the ADT
+    // 3. Remove from beginning
+    void deleteFromBeginning() {
+        if (head == NULL) {
+            cout << "List is empty\n";
+            return;
+        }
+        Node* temp = head;          // node to delete
+        head = head->next;          // move head forward
+
+        if (head != NULL) {
+            head->prev = NULL;      // new head's prev = NULL
+        } else {
+            tail = NULL;            // list became empty
+        }
+        delete temp;                // free old node
+    }
+
+    // 4. Remove from end
+    void deleteFromEnd() {
+        if (tail == NULL) {
+            cout << "List is empty\n";
+            return;
+        }
+        Node* temp = tail;          // node to delete
+        tail = tail->prev;          // move tail backward
+
+        if (tail != NULL) {
+            tail->next = NULL;      // new tail's next = NULL
+        } else {
+            head = NULL;            // list became empty
+        }
+        delete temp;                // free old node
+    }
+
+    // Utility: display forward
+    void displayForward() const {
+        Node* cur = head;
+        if (!cur) {
+            cout << "List: NULL\n";
+            return;
+        }
+        cout << "List (head -> tail): ";
+        while (cur) {
+            cout << cur->data;
+            if (cur->next) cout << " <-> ";
+            cur = cur->next;
+        }
+        cout << " -> NULL\n";
+    }
+
+    // Utility: display backward
+    void displayBackward() const {
+        Node* cur = tail;
+        if (!cur) {
+            cout << "List (empty)\n";
+            return;
+        }
+        cout << "List (tail -> head): ";
+        while (cur) {
+            cout << cur->data;
+            if (cur->prev) cout << " <-> ";
+            cur = cur->prev;
+        }
+        cout << " -> NULL\n";
+    }
+};
+
 int main() {
+    DoublyLinkedList dll;
     int choice, x;
-    while (1) {
-        printf("\n--- Doubly Linked List Operations ---\n");
-        printf("1. Insert at Beginning\n");
-        printf("2. Insert at End\n");
-        printf("3. Remove from Beginning\n");
-        printf("4. Remove from End\n");
-        printf("5. Display\n");
-        printf("6. Exit\n");
-        printf("Enter your choice: ");
-        scanf("%d", &choice);
+
+    while (true) {
+        cout << "\nMenu:\n";
+        cout << "1. Insert at beginning\n";
+        cout << "2. Insert at end\n";
+        cout << "3. Delete from beginning\n";
+        cout << "4. Delete from end\n";
+        cout << "5. Display forward\n";
+        cout << "6. Display backward\n";
+        cout << "7. Exit\n";
+        cout << "Enter choice: ";
+        if (!(cin >> choice)) break;
 
         switch (choice) {
-        case 1:
-            printf("Enter element: ");
-            scanf("%d", &x);
-            insertAtBeginning(x);
-            break;
-        case 2:
-            printf("Enter element: ");
-            scanf("%d", &x);
-            insertAtEnd(x);
-            break;
-        case 3:
-            removeFromBeginning();
-            break;
-        case 4:
-            removeFromEnd();
-            break;
-        case 5:
-            display();
-            break;
-        case 6:
-            printf("Exiting...\n");
-            exit(0);
-        default:
-            printf("Invalid choice.\n");
+            case 1:
+                cout << "Enter value: ";
+                cin >> x;
+                dll.insertAtBeginning(x);
+                break;
+            case 2:
+                cout << "Enter value: ";
+                cin >> x;
+                dll.insertAtEnd(x);
+                break;
+            case 3:
+                dll.deleteFromBeginning();
+                break;
+            case 4:
+                dll.deleteFromEnd();
+                break;
+            case 5:
+                dll.displayForward();
+                break;
+            case 6:
+                dll.displayBackward();
+                break;
+            case 7:
+                cout << "Exiting.\n";
+                return 0;
+            default:
+                cout << "Invalid choice.\n";
         }
     }
     return 0;
 }
 
+```
