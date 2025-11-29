@@ -667,7 +667,8 @@ int main() {
 
 **PRACTICAL 05**
 Implement Queue as an ADT.
-'''c++
+
+```c++
 class ArrayQueue {
 private:
     int arr[100];
