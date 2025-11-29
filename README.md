@@ -198,6 +198,127 @@ int main() {
 
 
 
+
+
+```c++
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* next;
+};
+
+class SinglyList {
+    Node* head;
+
+public:
+    SinglyList() { head = NULL; }
+
+    // Insert at beginning
+    void insertBeg(int x) {
+        Node* temp = new Node();
+        temp->data = x;
+        temp->next = head;
+        head = temp;
+    }
+
+    // Insert at ith position
+    void insertPos(int pos, int x) {
+        Node* temp = new Node();
+        temp->data = x;
+
+        if (pos == 1) {
+            temp->next = head;
+            head = temp;
+            return;
+        }
+
+        Node* curr = head;
+        for (int i = 1; i < pos - 1 && curr != NULL; i++)
+            curr = curr->next;
+
+        if (curr == NULL) {
+            cout << "Invalid Position\n";
+            return;
+        }
+
+        temp->next = curr->next;
+        curr->next = temp;
+    }
+
+    // Remove from beginning
+    void deleteBeg() {
+        if (head == NULL) return;
+
+        Node* temp = head;
+        head = head->next;
+        delete temp;
+    }
+
+    // Remove from ith position
+    void deletePos(int pos) {
+        if (head == NULL) return;
+
+        if (pos == 1) {
+            deleteBeg();
+            return;
+        }
+
+        Node* curr = head;
+        for (int i = 1; i < pos - 1 && curr->next != NULL; i++)
+            curr = curr->next;
+
+        if (curr->next == NULL) {
+            cout << "Invalid Position\n";
+            return;
+        }
+
+        Node* temp = curr->next;
+        curr->next = temp->next;
+        delete temp;
+    }
+
+    // Search an element
+    void search(int x) {
+        Node* curr = head;
+        int pos = 1;
+        while (curr) {
+            if (curr->data == x) {
+                cout << "Element found at position " << pos << "\n";
+                return;
+            }
+            curr = curr->next;
+            pos++;
+        }
+        cout << "Element not found\n";
+    }
+
+    void display() {
+        Node* curr = head;
+        while (curr) {
+            cout << curr->data << " ";
+            curr = curr->next;
+        }
+        cout << "\n";
+    }
+};
+
+int main() {
+    SinglyList s;
+    s.insertBeg(10);
+    s.insertPos(2, 20);
+    s.insertPos(3, 30);
+    s.display();
+    s.search(20);
+    s.deletePos(2);
+    s.display();
+}
+```
+
+
+
+
 # PRACTICAL 02
 > WAP  to implement doubly linked list ad an ADT that supports the following operations: 
 1 insert an element x at the beginning  .
@@ -379,6 +500,97 @@ int main() {
 }
 
 ```
+
+
+```c++
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* prev;
+    Node* next;
+};
+
+class DoublyList {
+    Node* head;
+
+public:
+    DoublyList() { head = NULL; }
+
+    void insertBeg(int x) {
+        Node* temp = new Node();
+        temp->data = x;
+        temp->prev = NULL;
+        temp->next = head;
+        if (head != NULL) head->prev = temp;
+        head = temp;
+    }
+
+    void insertEnd(int x) {
+        Node* temp = new Node();
+        temp->data = x;
+        temp->next = NULL;
+
+        if (head == NULL) {
+            temp->prev = NULL;
+            head = temp;
+            return;
+        }
+
+        Node* curr = head;
+        while (curr->next)
+            curr = curr->next;
+
+        curr->next = temp;
+        temp->prev = curr;
+    }
+
+    void deleteBeg() {
+        if (head == NULL) return;
+
+        Node* temp = head;
+        head = head->next;
+        if (head != NULL) head->prev = NULL;
+        delete temp;
+    }
+
+    void deleteEnd() {
+        if (head == NULL) return;
+
+        Node* curr = head;
+        while (curr->next)
+            curr = curr->next;
+
+        if (curr->prev) curr->prev->next = NULL;
+        else head = NULL;
+
+        delete curr;
+    }
+
+    void display() {
+        Node* curr = head;
+        while (curr) {
+            cout << curr->data << " ";
+            curr = curr->next;
+        }
+        cout << endl;
+    }
+};
+
+int main() {
+    DoublyList d;
+    d.insertBeg(10);
+    d.insertEnd(20);
+    d.insertEnd(30);
+    d.display();
+    d.deleteBeg();
+    d.display();
+}
+
+```
+
+
 **PRACTICAL 03**
 Write a program to implement circular linked list as an ADT which supports the following operations: i.Insert an element x in the list ii.Remove an element from the list iii.Search for an element x in the list and return its pointer
 
@@ -554,6 +766,108 @@ int main() {
 
 ```
 
+
+
+```c++
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* next;
+};
+
+class CircularList {
+    Node* last;
+
+public:
+    CircularList() { last = NULL; }
+
+    void insert(int x) {
+        Node* temp = new Node();
+        temp->data = x;
+
+        if (last == NULL) {
+            temp->next = temp;
+            last = temp;
+        } else {
+            temp->next = last->next;
+            last->next = temp;
+            last = temp;
+        }
+    }
+
+    void remove(int x) {
+        if (last == NULL) return;
+
+        Node* curr = last->next;
+        Node* prev = last;
+
+        do {
+            if (curr->data == x) {
+                if (curr == last && curr->next == last) {
+                    last = NULL;
+                } else {
+                    prev->next = curr->next;
+                    if (curr == last)
+                        last = prev;
+                }
+                delete curr;
+                return;
+            }
+            prev = curr;
+            curr = curr->next;
+        } while (curr != last->next);
+    }
+
+    void search(int x) {
+        if (last == NULL) {
+            cout << "List Empty\n";
+            return;
+        }
+
+        Node* curr = last->next;
+        int pos = 1;
+
+        do {
+            if (curr->data == x) {
+                cout << "Element found at position " << pos << endl;
+                return;
+            }
+            curr = curr->next;
+            pos++;
+        } while (curr != last->next);
+
+        cout << "Element not found\n";
+    }
+
+    void display() {
+        if (last == NULL) return;
+
+        Node* curr = last->next;
+        do {
+            cout << curr->data << " ";
+            curr = curr->next;
+        } while (curr != last->next);
+        cout << endl;
+    }
+};
+
+int main() {
+    CircularList c;
+    c.insert(10);
+    c.insert(20);
+    c.insert(30);
+    c.display();
+    c.search(20);
+    c.remove(20);
+    c.display();
+}
+
+```
+
+
+
 **PRACTICAL 04**
 Implement Stack as an ADT and use it to evaluate a prefix/postfix expression.
 
@@ -664,6 +978,37 @@ int main() {
 
 ```
 
+```c++
+#include <iostream>
+#include <stack>
+#include <string>
+using namespace std;
+
+int evaluatePostfix(string exp) {
+    stack<int> s;
+    for (char ch : exp) {
+        if (isdigit(ch)) s.push(ch - '0');
+        else {
+            int b = s.top(); s.pop();
+            int a = s.top(); s.pop();
+            switch (ch) {
+                case '+': s.push(a + b); break;
+                case '-': s.push(a - b); break;
+                case '*': s.push(a * b); break;
+                case '/': s.push(a / b); break;
+            }
+        }
+    }
+    return s.top();
+}
+
+int main() {
+    string exp = "52+3*";
+    cout << "Postfix result: " << evaluatePostfix(exp);
+}
+
+```
+
 
 **PRACTICAL 05**
 Implement Queue as an ADT.
@@ -722,6 +1067,52 @@ public:
 };
 
 ```
+
+```c++
+#include <iostream>
+using namespace std;
+
+class Queue {
+    int arr[50], front, rear;
+
+public:
+    Queue() { front = rear = -1; }
+
+    void enqueue(int x) {
+        if (rear == 49) {
+            cout << "Queue Full\n";
+            return;
+        }
+        if (front == -1) front = 0;
+        arr[++rear] = x;
+    }
+
+    void dequeue() {
+        if (front == -1 || front > rear) {
+            cout << "Queue Empty\n";
+            return;
+        }
+        front++;
+    }
+
+    void display() {
+        for (int i = front; i <= rear; i++)
+            cout << arr[i] << " ";
+        cout << endl;
+    }
+};
+
+int main() {
+    Queue q;
+    q.enqueue(10);
+    q.enqueue(20);
+    q.display();
+    q.dequeue();
+    q.display();
+}
+
+```
+
 
 **PRACTICAL 06**
 Write a program to implement Binary Search Tree as an ADT which supports the following operations: i.Insert an element x ii.Delete an element x iii.Search for an element x in the BST iv.Display the elements of the BST in preorder, inorder, and postorder traversal
@@ -914,6 +1305,126 @@ int main() {
 }
 
 ```
+
+
+```c++
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* left;
+    Node* right;
+};
+
+Node* createNode(int data) {
+    Node* newNode = new Node();
+    newNode->data = data;
+    newNode->left = newNode->right = NULL;
+    return newNode;
+}
+
+// Insert in BST
+Node* insert(Node* root, int data) {
+    if (root == NULL) return createNode(data);
+
+    if (data < root->data)
+        root->left = insert(root->left, data);
+    else
+        root->right = insert(root->right, data);
+
+    return root;
+}
+
+// Search
+bool search(Node* root, int key) {
+    if (root == NULL) return false;
+    if (root->data == key) return true;
+    if (key < root->data) return search(root->left, key);
+    return search(root->right, key);
+}
+
+// Find minimum (helper)
+Node* minValueNode(Node* node) {
+    while (node->left != NULL)
+        node = node->left;
+    return node;
+}
+
+// Delete node
+Node* deleteNode(Node* root, int key) {
+    if (root == NULL) return root;
+
+    if (key < root->data)
+        root->left = deleteNode(root->left, key);
+    else if (key > root->data)
+        root->right = deleteNode(root->right, key);
+    else {
+        if (root->left == NULL) {
+            Node* temp = root->right;
+            delete root;
+            return temp;
+        }
+        else if (root->right == NULL) {
+            Node* temp = root->left;
+            delete root;
+            return temp;
+        }
+
+        Node* temp = minValueNode(root->right);
+        root->data = temp->data;
+        root->right = deleteNode(root->right, temp->data);
+    }
+    return root;
+}
+
+// Traversals
+void inorder(Node* root) {
+    if (root) {
+        inorder(root->left);
+        cout << root->data << " ";
+        inorder(root->right);
+    }
+}
+
+void preorder(Node* root) {
+    if (root) {
+        cout << root->data << " ";
+        preorder(root->left);
+        preorder(root->right);
+    }
+}
+
+void postorder(Node* root) {
+    if (root) {
+        postorder(root->left);
+        postorder(root->right);
+        cout << root->data << " ";
+    }
+}
+
+int main() {
+    Node* root = NULL;
+
+    root = insert(root, 30);
+    root = insert(root, 20);
+    root = insert(root, 40);
+    root = insert(root, 10);
+
+    cout << "Inorder: "; inorder(root); cout << endl;
+    cout << "Preorder: "; preorder(root); cout << endl;
+    cout << "Postorder: "; postorder(root); cout << endl;
+
+    cout << "Searching 20: " << (search(root, 20) ? "Found" : "Not Found") << endl;
+
+    root = deleteNode(root, 20);
+    cout << "After Deletion Inorder: ";
+    inorder(root);
+}
+
+```
+
+
 
 **PRACTICAL 07**
 Write a program to implement insert and search operation in AVL trees.
@@ -1110,6 +1621,126 @@ int main() {
         }
     }
     return 0;
+}
+
+```
+
+
+
+```c++
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data, height;
+    Node* left;
+    Node* right;
+};
+
+int height(Node* n) {
+    return n ? n->height : 0;
+}
+
+int getBalance(Node* n) {
+    return n ? height(n->left) - height(n->right) : 0;
+}
+
+Node* newNode(int key) {
+    Node* node = new Node();
+    node->data = key;
+    node->left = node->right = NULL;
+    node->height = 1;
+    return node;
+}
+
+Node* rightRotate(Node* y) {
+    Node* x = y->left;
+    Node* T2 = x->right;
+
+    x->right = y;
+    y->left = T2;
+
+    y->height = max(height(y->left), height(y->right)) + 1;
+    x->height = max(height(x->left), height(x->right)) + 1;
+
+    return x;
+}
+
+Node* leftRotate(Node* x) {
+    Node* y = x->right;
+    Node* T2 = y->left;
+
+    y->left = x;
+    x->right = T2;
+
+    x->height = max(height(x->left), height(x->right)) + 1;
+    y->height = max(height(y->left), height(y->right)) + 1;
+
+    return y;
+}
+
+Node* insert(Node* node, int key) {
+    if (node == NULL)
+        return newNode(key);
+
+    if (key < node->data)
+        node->left = insert(node->left, key);
+    else if (key > node->data)
+        node->right = insert(node->right, key);
+    else
+        return node;
+
+    node->height = 1 + max(height(node->left), height(node->right));
+
+    int balance = getBalance(node);
+
+    if (balance > 1 && key < node->left->data)
+        return rightRotate(node);
+
+    if (balance < -1 && key > node->right->data)
+        return leftRotate(node);
+
+    if (balance > 1 && key > node->left->data) {
+        node->left = leftRotate(node->left);
+        return rightRotate(node);
+    }
+
+    if (balance < -1 && key < node->right->data) {
+        node->right = rightRotate(node->right);
+        return leftRotate(node);
+    }
+
+    return node;
+}
+
+bool search(Node* root, int key) {
+    if (!root) return false;
+    if (root->data == key) return true;
+    if (key < root->data) return search(root->left, key);
+    return search(root->right, key);
+}
+
+void inorder(Node* root) {
+    if (root) {
+        inorder(root->left);
+        cout << root->data << " ";
+        inorder(root->right);
+    }
+}
+
+int main() {
+    Node* root = NULL;
+
+    root = insert(root, 30);
+    root = insert(root, 20);
+    root = insert(root, 40);
+    root = insert(root, 10);
+
+    cout << "Inorder: ";
+    inorder(root);
+    cout << endl;
+
+    cout << "Search 20: " << (search(root, 20) ? "Found" : "Not Found");
 }
 
 ```
