@@ -382,7 +382,8 @@ int main() {
 **PRACTICAL 03**
 Write a program to implement circular linked list as an ADT which supports the following operations: i.Insert an element x in the list ii.Remove an element from the list iii.Search for an element x in the list and return its pointer
 
-'''c++
+
+```c++
 #include <iostream>
 using namespace std;
 
@@ -550,11 +551,14 @@ int main() {
     }
     return 0;
 }
-'''
+
+```
 
 **PRACTICAL 04**
 Implement Stack as an ADT and use it to evaluate a prefix/postfix expression.
-'''c++
+
+
+```c++
 #include <iostream>
 #include <cstring>
 #include <cctype>
@@ -657,7 +661,10 @@ int main() {
 
     return 0;
 }
-'''
+
+```
+
+
 **PRACTICAL 05**
 Implement Queue as an ADT.
 '''c++
@@ -712,12 +719,14 @@ public:
         return arr[front];
     }
 };
-'''
+
+```
 
 **PRACTICAL 06**
 Write a program to implement Binary Search Tree as an ADT which supports the following operations: i.Insert an element x ii.Delete an element x iii.Search for an element x in the BST iv.Display the elements of the BST in preorder, inorder, and postorder traversal
 
-'''c++
+
+```c++
 #include <iostream>
 using namespace std;
 
@@ -902,7 +911,206 @@ int main() {
     }
     return 0;
 }
-'''
 
+```
+
+**PRACTICAL 07**
+Write a program to implement insert and search operation in AVL trees.
+
+```c++
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int key;
+    Node* left;
+    Node* right;
+    int height;
+    Node(int k) : key(k), left(nullptr), right(nullptr), height(1) {}
+};
+
+class AVL {
+private:
+    Node* root;
+
+    // utility: node height (null -> 0)
+    int height(Node* n) {
+        return n ? n->height : 0;
+    }
+
+    // utility: balance factor = height(left) - height(right)
+    int getBalance(Node* n) {
+        return n ? height(n->left) - height(n->right) : 0;
+    }
+
+    // right rotate subtree rooted with y
+    Node* rightRotate(Node* y) {
+        Node* x = y->left;
+        Node* T2 = x->right;
+
+        // rotation
+        x->right = y;
+        y->left = T2;
+
+        // update heights
+        y->height = 1 + max(height(y->left), height(y->right));
+        x->height = 1 + max(height(x->left), height(x->right));
+
+        return x; // new root
+    }
+
+    // left rotate subtree rooted with x
+    Node* leftRotate(Node* x) {
+        Node* y = x->right;
+        Node* T2 = y->left;
+
+        // rotation
+        y->left = x;
+        x->right = T2;
+
+        // update heights
+        x->height = 1 + max(height(x->left), height(x->right));
+        y->height = 1 + max(height(y->left), height(y->right));
+
+        return y; // new root
+    }
+
+    // recursive insert helper
+    Node* insertRec(Node* node, int key) {
+        // 1. normal BST insertion
+        if (node == nullptr)
+            return new Node(key);
+
+        if (key < node->key)
+            node->left = insertRec(node->left, key);
+        else if (key > node->key)
+            node->right = insertRec(node->right, key);
+        else
+            return node; // duplicates ignored
+
+        // 2. update height of this ancestor node
+        node->height = 1 + max(height(node->left), height(node->right));
+
+        // 3. get balance factor to check whether node became unbalanced
+        int balance = getBalance(node);
+
+        // 4. If unbalanced, there are 4 cases
+
+        // Case LL: left-left (rotate right)
+        if (balance > 1 && key < node->left->key)
+            return rightRotate(node);
+
+        // Case RR: right-right (rotate left)
+        if (balance < -1 && key > node->right->key)
+            return leftRotate(node);
+
+        // Case LR: left-right -> first left rotate left child, then right rotate node
+        if (balance > 1 && key > node->left->key) {
+            node->left = leftRotate(node->left);
+            return rightRotate(node);
+        }
+
+        // Case RL: right-left -> first right rotate right child, then left rotate node
+        if (balance < -1 && key < node->right->key) {
+            node->right = rightRotate(node->right);
+            return leftRotate(node);
+        }
+
+        // return unchanged node pointer
+        return node;
+    }
+
+    // recursive search helper
+    Node* searchRec(Node* node, int key) const {
+        if (node == nullptr || node->key == key) return node;
+        if (key < node->key) return searchRec(node->left, key);
+        return searchRec(node->right, key);
+    }
+
+    // inorder display (useful for testing — will be sorted)
+    void inorderRec(Node* node) const {
+        if (!node) return;
+        inorderRec(node->left);
+        cout << node->key << " ";
+        inorderRec(node->right);
+    }
+
+    // free nodes
+    void freeRec(Node* node) {
+        if (!node) return;
+        freeRec(node->left);
+        freeRec(node->right);
+        delete node;
+    }
+
+public:
+    AVL() : root(nullptr) {}
+    ~AVL() { freeRec(root); }
+
+    // Public insert
+    void insert(int key) {
+        root = insertRec(root, key);
+    }
+
+    // Public search: returns pointer or nullptr
+    Node* search(int key) const {
+        return searchRec(root, key);
+    }
+
+    // Utility: print inorder (sorted order)
+    void inorder() const {
+        if (!root) { cout << "Tree empty\n"; return; }
+        inorderRec(root);
+        cout << "\n";
+    }
+};
+
+// ----------------------
+// Demo / usage
+// ----------------------
+int main() {
+    AVL tree;
+    int choice, x;
+
+    cout << "AVL Demo\n";
+    while (true) {
+        cout << "\nMenu:\n";
+        cout << "1. Insert\n";
+        cout << "2. Search\n";
+        cout << "3. Inorder display\n";
+        cout << "4. Exit\n";
+        cout << "Enter choice: ";
+        if (!(cin >> choice)) break;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter key to insert: ";
+                cin >> x;
+                tree.insert(x);
+                cout << x << " inserted.\n";
+                break;
+            case 2:
+                cout << "Enter key to search: ";
+                cin >> x;
+                if (tree.search(x))
+                    cout << x << " found in tree.\n";
+                else
+                    cout << x << " NOT found.\n";
+                break;
+            case 3:
+                cout << "Inorder: ";
+                tree.inorder();
+                break;
+            case 4:
+                cout << "Exiting.\n";
+                return 0;
+            default:
+                cout << "Invalid choice.\n";
+        }
+    }
+    return 0;
+}
+
+```
 
 
