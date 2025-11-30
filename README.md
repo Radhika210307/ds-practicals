@@ -1009,6 +1009,41 @@ int main() {
 
 ```
 
+**implement by linked list**
+```c++
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* next;
+    Node(int d) : data(d), next(NULL) {}
+};
+
+class Stack {
+private:
+    Node* top;   // top pointer
+
+public:
+    Stack() : top(NULL) {}
+
+    ~Stack() {
+        while (!isEmpty()) pop();
+    }
+
+    bool isEmpty() {
+        return top == NULL;
+    }
+
+    // PUSH operation
+    void push(int x) {
+        Node* temp = new Node(x);
+        temp->next = top;   // new node points to old top
+        top = temp;         // update top to new node
+        cout << x << " pushed onto stack.\n";
+```
+
+
 
 **PRACTICAL 05**
 Implement Queue as an ADT.
