@@ -1130,60 +1130,6 @@ int main() {
 **PRACTICAL 05**
 Implement Queue as an ADT.
 
-```c++
-class ArrayQueue {
-private:
-    int arr[100];
-    int front;
-    int rear;
-    int size;
-
-public:
-    ArrayQueue() {
-        front = 0;
-        rear = -1;
-        size = 0;
-    }
-
-    bool isEmpty() {
-        return size == 0;
-    }
-
-    bool isFull() {
-        return size == 100;
-    }
-
-    void enqueue(int x) {
-        if (isFull()) {
-            cout << "Queue Overflow\n";
-            return;
-        }
-        rear = (rear + 1) % 100;   // circular increment
-        arr[rear] = x;
-        size++;
-    }
-
-    int dequeue() {
-        if (isEmpty()) {
-            cout << "Queue Underflow\n";
-            return -1;
-        }
-        int value = arr[front];
-        front = (front + 1) % 100; // circular increment
-        size--;
-        return value;
-    }
-
-    int peek() {
-        if (isEmpty()) {
-            cout << "Queue Empty\n";
-            return -1;
-        }
-        return arr[front];
-    }
-};
-
-```
 
 ```c++
 #include <iostream>
