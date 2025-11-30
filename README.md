@@ -1011,6 +1011,7 @@ int main() {
 
 **implement by linked list**
 ```c++
+
 #include <iostream>
 using namespace std;
 
@@ -1041,6 +1042,87 @@ public:
         temp->next = top;   // new node points to old top
         top = temp;         // update top to new node
         cout << x << " pushed onto stack.\n";
+    }
+
+    // POP operation
+    int pop() {
+        if (isEmpty()) {
+            cout << "Stack Underflow! Cannot pop.\n";
+            return -1;
+        }
+        Node* temp = top;
+        int value = temp->data;
+        top = top->next;    // move top one node down
+        delete temp;        // free memory
+        return value;
+    }
+
+    // PEEK operation
+    int peek() {
+        if (isEmpty()) {
+            cout << "Stack is empty.\n";
+            return -1;
+        }
+        return top->data;
+    }
+
+    // DISPLAY stack (top to bottom)
+    void display() {
+        if (isEmpty()) {
+            cout << "Stack is empty.\n";
+            return;
+        }
+        cout << "Stack (top → bottom): ";
+        Node* cur = top;
+        while (cur != NULL) {
+            cout << cur->data << " ";
+            cur = cur->next;
+        }
+        cout << endl;
+    }
+};
+
+int main() {
+    Stack st;
+    int choice, x;
+
+    while (true) {
+        cout << "\nMenu:\n";
+        cout << "1. Push\n";
+        cout << "2. Pop\n";
+        cout << "3. Peek\n";
+        cout << "4. Display\n";
+        cout << "5. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter value: ";
+                cin >> x;
+                st.push(x);
+                break;
+            case 2:
+                x = st.pop();
+                if (x != -1)
+                    cout << "Popped: " << x << endl;
+                break;
+            case 3:
+                x = st.peek();
+                if (x != -1)
+                    cout << "Top element: " << x << endl;
+                break;
+            case 4:
+                st.display();
+                break;
+            case 5:
+                cout << "Exiting.\n";
+                return 0;
+            default:
+                cout << "Invalid choice.\n";
+        }
+    }
+}
 ```
 
 
